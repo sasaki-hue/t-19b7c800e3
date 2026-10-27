@@ -164,6 +164,8 @@ function yen() {
 function rateInfo() {
   const y = yen(), same = y.lend === y.exch;
   document.getElementById('own').disabled = same;   // 単価が同じなら持ちメダル枚数で値が変わらないので選ばせない
+  const el = document.getElementById('rateinfo');
+  if (el) el.textContent = `いまの選択: 現金 1 枚 ${y.cIn.toFixed(2)} 円(1,000円 ÷ ${y.lend}枚)/ メダル 1 枚の交換価値 ${y.vOut.toFixed(2)} 円(1,000円 ÷ ${y.exch}枚)/ ` + (same ? '貸し枚数と交換枚数が同じなので、持ちメダルの枚数によらず同じ値になります(持ちメダルは選択不可)' : `持ちメダル ${y.own.toLocaleString()} 枚を先に使い、足りない分だけ現金で買う前提`);
 }
 for (const id of ['rate', 'own']) document.getElementById(id).addEventListener('change', () => { rateInfo(); render(); });
 rateInfo();
@@ -287,8 +289,9 @@ document.getElementById('how').innerHTML = `
 ・朝イチ = 当日最初の当り待ち(0G から)。朝2 = 前回が当日最初の当り。<br>
 ・円換算: 現金 1 枚 = 1,000円 ÷ 貸し枚数、メダル 1 枚の交換価値 = 1,000円 ÷ 交換枚数。持ちメダルを先に使い、足りない分だけ現金で買う。現金で買う枚数は当選までの投資が台ごとにばらつくため、当選確率の曲線から期待値で出す(持ちメダルが尽きる G 以降もまだ当たっていない確率の積算 × コインベース)。RUSH 後のやめ補正 ${SP.yame_hosei_g}G と AT 中のベットは獲得メダル(交換価値)。<br>
 ・期待値(円) = 枚数ベースの期待値 × 交換価値 − (現金 1 枚 − 交換価値) × 現金で買う期待枚数。表の「出玉率」列は ROI = 1 + 期待値 ÷ 投入円(現金分は現金単価、残りは交換価値)で、貸し枚数と交換枚数が同じときは枚数ベースの出玉率と一致し、持ちメダル枚数によらない。<br>
+・<span id="rateinfo"></span><br>
 ・${D.meta.fix_note}` + (D.pooled && Object.keys(D.pooled).length ? `<br>・<b>前回 3連 の補正</b>: 前回弱履歴 × 前回 3連 の 12 区分は標本が少なく(37G 到達 99〜1,900 件)順番が入れ替わるため、「出玉率 = 切片 + 前々回の区分ごとの増分(0 以上) + 前回当選G の帯ごとの増分(0 以上)」の単調モデルを 37G 到達数を重みに当てはめ、各区分の RUSH_TY を一定倍して 37G 行の出玉率をその値に合わせた。初当り確率と到達数は実測のまま。内訳: ` + Object.entries(D.pooled).map(([k, v]) => { const [, , pp, g] = k.split('|'); const N = {pp12: '前々回 単発or2連', pp3: '前々回 3連', pp4cut: '前々回 4連以上or切断後', ppr7tj: '前々回 赤7or天井', g1: '200G未満', g2: '200〜1000G', g3: '1000G〜天井未満'}; return `${N[pp]}×${N[g]} ${v.roi_obs}%→${v.roi_fit}%(TY ×${v.ty_factor.toFixed(3)})`; }).join(' / ') : '');
-render();
+rateInfo(); render();
 </script>
 </body>
 </html>
