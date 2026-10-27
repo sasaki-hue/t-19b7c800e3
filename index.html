@@ -125,7 +125,6 @@ select:disabled{background:#eee;color:#999;cursor:not-allowed}
       <option value="500">500枚</option>
       <option value="1000">1000枚</option>
     </select></div>
-  <div class="path" id="rateinfo"></div>
 </div>
 <h2>2. 狙い方を選ぶ</h2>
 <div class="card">
@@ -165,7 +164,6 @@ function yen() {
 function rateInfo() {
   const y = yen(), same = y.lend === y.exch;
   document.getElementById('own').disabled = same;   // 単価が同じなら持ちメダル枚数で値が変わらないので選ばせない
-  document.getElementById('rateinfo').textContent = `現金 1 枚 ${y.cIn.toFixed(2)} 円(1,000円 ÷ ${y.lend}枚)/ メダル 1 枚の交換価値 ${y.vOut.toFixed(2)} 円(1,000円 ÷ ${y.exch}枚)/ ` + (same ? '貸し枚数と交換枚数が同じなので、持ちメダルの枚数によらず同じ値になります' : `持ちメダル ${y.own.toLocaleString()} 枚を先に使い、足りない分だけ現金`);
 }
 for (const id of ['rate', 'own']) document.getElementById(id).addEventListener('change', () => { rateInfo(); render(); });
 rateInfo();
